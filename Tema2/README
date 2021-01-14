@@ -1,0 +1,65 @@
+NUME: CHIRILA ALBERT
+GRUPA: 324CB
+
+ -------------------------------------SERVER-----------------------------------
+
+	Am creat socketii pentru clientii UDP si TCP, am completat campurile
+ din structurile corespunzatoare clientilor. Am folosit doi vectori de structuri
+ astfel: un vector de clienti conectati la server si un vector de topicuri,
+ fiecare avand un vector de clienti(socketi) abonati la acel topic.
+	Serverul ruleaza pana cand primeste comanda 'exit'.
+	Daca este o cerere de la un client TCP, se actualizeaza valoarea maxima
+ a socketilor(fdmax) si noul socket de introduce in multimea de socketi. Se 
+ primeste ID-ul clientului, apoi se verifica daca acest client nu este conectat
+ deja (functia 'connected'). In caz contrar, se actualizeaza vectorul de clienti
+ si se afiseaza mesajul corespunzator.
+	Daca este o comanda de la un client TCP, se verifica daca are loc
+ inchiderea conexiunii cu clientul, in urma primirii comenzii 'exit' de la client.
+ In caz contrar, se verifica daca este comanda 'subscribe' sau 'unsubscribe'
+ si se apeleaza functia corespunzatoare.
+	Functia 'subscribe' adauga in vectorul 'online' topicul de care clientul
+ este interesat, precum si socketul corespunzator.
+	Functia 'unsubscribe' elimina socketul corespunzator clientului de pe
+ un anumit topic(adica o intrare din vectorul 'online').
+	Daca este un mesaj de la un client UDP, se completeaza structura pentru
+ mesajul TCP, se verifica tipul mesajului cu ajutorul functiei 'message_type'
+ care completeaza restul mesajului(type-ul, topicul si payload-ul) TCP si se
+ trimite mesajul tuturor clientilor abonati la acel topic.
+
+      -----OBSERVATII-----
+	Indexarea in vectorul de clienti incepe de valoarea primului new_sock,
+ adica 5. Si fiecare element al vectorului va contine socketul corespunzator,
+ implicit pozitia din vector. Pe poz 5 va fi socketul 5, pe poz 6 va fi socketul 6 etc.
+  	In caz de eliminare a unui socket, valoarea de pe pozitia elementului
+ de eliminat va fi -1.
+	Asemenea si pentru vectorul de socketi specific unui topic(in vectorul 'online').
+	Tratarea erorilor se face cu functia 'DIE' definita in laborator.
+
+
+ ----------------------------------SUBSCRIBER----------------------------------
+
+	Am creat socketul corespunzator conexiunii cu serverul si am completat
+ campurile din structura specifica serverului. Clientul ruleaza pana cand va fi
+ comanda 'exit'. Daca primeste '(un)subscribe', se va completa structura 'command',
+ si se va trimite serverului pentru a sti daca va avea loc o abonare la topic
+ sau dezabonare. Daca se primeste un mesaj de la server, se verifica daca este
+ un mesaj ce specifica inchiderea conexiunii cu clientul('exit' de la server)
+ sau un avertisment ce semnifica faptul ca acel client este conectat deja la server.
+ In caz contrar se extrage structura de tip mesaj TCP din buffer si se afiseaza
+ informatiile despre mesajul primit.
+
+     -----OBSERVATII-----
+     	La rulare, dupa ce clientul primeste mesajele cu topicul la care este abonat
+ si dau exit din server sau client, primesc 'stack smashing detected'. Nu mi-am
+ dat seama de la ce ar putea fi, dar am gasit ca o cauza ar fi "buffer overflow".
+ Nu stiu de unde, avand in vedere ca mesajele se trimit, serverul nu se
+ opreste(daca dau 'exit' din client) si imi afiseaza corect ca acel client s-a
+ deconectat.
+
+ -----------------------------------RULARE-------------------------------------
+
+	Pentru server: make run_server - va rula default pe portul 8080
+	Pentru client: make run_subscriber ID=the_id_you_want - va rula pe id-ul
+ dat, si default pe adresa 127.0.0.1 si portul 8080
+
+	

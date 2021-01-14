@@ -1,0 +1,40 @@
+NUME: CHIRILA ALBERT
+GRUPA: 324CB
+
+
+	Pentru implementarea temei am  folosit scheletul din laboratorul 10.
+	Se citeste de la tastatura pana se primeste comanda 'exit'. Am verificat 
+fiecare comanda de primita si am apelat functiile corespunzatoare. Daca se
+citeste 'register' sau 'login', se citesc username-ul si parola si se construieste
+ payload-ul. Ambele comenzi sunt de tip POST si se va apela functia 
+'compute_post_request' cu parametrii specifici. Se primeste raspunsul de la server 
+si in cazul in care a fost o autentificare, se va salva cookie-ul primit.
+	Daca se citeste 'enter_library', se va apela functia corespunzatoare 
+comenzii de tip GET cu parametrii necesari. Tokenul si payload-ul au valoarea NULL, 
+deoarece tokenul nu exista si de payload nu este nevoie in construirea mesajului.
+Trimiterea cookie-ului ca parametru ajuta la verificarea autentificarii. Se primeste
+raspunsul de la server si in caz de succes, se va salva token-ul primit doar daca 
+clientul nu a dat logout inainte(se primeste mesaj de eroare de la server, dar primesc
+seg fault pentru ca nu exista token).
+	La primirea comenzii 'get_books' se apeleaza 'compute_get_request' cu parametrii
+corespunzatori. Si se asteapta raspunsul server-ului. Parametrii 'cookie' si 'token'
+ma ajuta sa verific daca clientul are acces la biblioteca.
+	La primirea comenzii 'get_book", se va citi id-ul, se va contrui adresa URL, 
+in functie de ID-ul citit si se va apela functia 'compute_get_request' ce va face
+ce va face verificarile de mai sus(comanda 'get_books').
+	Daca se citeste 'add_book', se citesc de la tastaura informatiile necesare
+si se construieste payload-ul. Se apeleaza functia 'compute_post_request', care va
+primi ca parametru si token-ul, deoarece se verifica accesul la biblioteca.
+	Daca se citeste 'delete_book', se citeste id-ul, se contruieste adresa URL si
+se apeleaza 'compute_get_request', care va construi mesajul cu ruta de acces 
+corespunzatoare. Parametrii cookie si token verifica atat accesul la biblioteca, cat 
+si autentificarea clientului.
+	Daca se citeste 'logout' atunci clientul nu va mai fi autentificat, apelandu-se
+compute_get_request. Parametrul cookie va verifica daca clientul este autentificat.
+Se sterg cookie-ul si token-ul.
+	La primirea comenzii 'exit', se va inchide conexiunea cu socketul server-ului si programul se incheie.
+	
+	ALTE OBSERVATII
+	
+	Am modificat semnatura functiilor din laboratorul 10: 'compute_get_request'
+si 'compute_post_request' pentru o lizibilitate mai buna.

@@ -1,0 +1,23 @@
+NUME: CHIRILA ALBERT
+GRUPA: 324CB
+
+
+	Citirea fisierului "rtable.txt" am facut-o folosind strtok si am apelat functia 'take_value' pentru a obtine valoarea uint32_t a fiacarui camp. Structura folosita este aceeasi cu cea din laboratorul 4.
+
+	ETAPELE PROCESULUI DE DIRIJARE
+	
+	1. Se primeste de un pachet de tip ARP. Verific daca este ARP REQUEST sau ARP REPLY.
+Daca este pachet de tip ARP REQUEST, modific campurile din ether_header si ether_arp cu adresele MAC si IP corespunzatoare.
+	2. Se trimite pe aceeasi ruta pachetul modificat, care este de tipul ARP REPLY.
+	3. Se primeste un pachet de tip IP cu ICMP de tip ECHO REQUEST. Caut astfel ruta in tabela de rutare si intrarea corespunzatoare in tabela ARP.
+	4. a) Daca pachetul este destinat router-ului, se creaza packetul ICMP ECHO REPLY, folosind functia 'create_icmp_packet', pe care il trimit inapoi host-ului.
+	   b) Daca nu se gaseste ruta, creez un pachet de ICMP de tip HOST UNREACHABLE(protocol ICMP), folosind functia 'create_icmp_packet', pe care il trimit inapoi host-ului.
+	   c) Daca TTL <= 1, creez un pachet ICMP de tip TIME EXCEEDED(type = 11), pe care il trimit inapoi hostului.
+	   d) Daca se gaseste ruta, caut intrarea in tabela ARP. Daca intrarea este nula, creez un pachet de tip ARP REQUEST, folosind functia 'create_arp_packet'. Pachetul primit va fi introdus in coada, iar pachetul creat va fi trimis la host-ul destinatie din pachetul primit.
+Daca se gaseste intrarea in tabela ARP, are loc dirijarea pachetului. Se verifica checksum. Se decrementeaza TTL-ul si se actualizeaza checksum-ul, folosind functia 'ip_checksum' din laboratorul 4, se modifica campurile cu adresele MAC si IP corespunzatoare si se trimite pachetul.
+	5. Pentru cazul in care nu se gaseste in tabela ARP intrarea si se trimite un ARP REQUEST, se va primi un ARP REPLY cu adresele MAC si IP corespunzatoare si se actualizeaza tabela ARP. Se vor extrage din coada pachetele destinate acestui host, se actualizeaza TTL si checksum, se modifica campurile corespunzatoare si se trimit pachetele. Se va primi mai apoi un pachet IP cu ICMP de tip ECHO REPLY de la acelasi host care a trimis ARP REPLY si se va relua procesul descris la punctul 4.
+	
+	Protocolul ICMP l-am descris la punctul 4, subpunctele a), b) si c).
+
+	Cautarea in tabela de rutare o fac folosind cautare binara de complexitate O(log(n)).
+In caz ca gasesc o ruta care respecta relatia data, o adaug intr-un vector alocat dinamic. Pentru a extrage rezultatul, caut in acest vector ruta cu masca cea mai mare.
